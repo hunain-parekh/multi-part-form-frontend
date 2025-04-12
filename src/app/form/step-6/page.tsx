@@ -6,16 +6,18 @@ import { useRouter } from "next/navigation";
 import { Button, Card, Spinner } from "flowbite-react";
 import ProgressBar from "@/components/ProgressBar";
 import { useState } from "react";
-import axios from "axios";
-import { FormState } from "@/types/formTypes";
-import { useUserApi } from "@/hooks/useUserApi";
+import {
+  useAddUserMutation,
+  useUpdateUserMutation,
+} from "@/store/services/userApi";
 
 export default function Step6() {
   const router = useRouter();
   const form = useSelector((state: RootState) => state.form);
   const [loading, setLoading] = useState(false);
 
-  const { updateUser, createUser } = useUserApi();
+  const [addUser] = useAddUserMutation();
+  const [updateUser] = useUpdateUserMutation();
 
   const handleEdit = (step: number) => {
     router.push(`/form/step-${step}`);
@@ -27,7 +29,7 @@ export default function Step6() {
       if (form._id) {
         await updateUser(form);
       } else {
-        await createUser(form);
+        await addUser(form);
       }
       router.push("/form/success");
     } catch (error) {

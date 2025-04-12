@@ -62,7 +62,7 @@ npm install
 Create a `.env.local` file in the root and add your backend API base URL:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
 ```
 
 ### 4. Run the Dev Server

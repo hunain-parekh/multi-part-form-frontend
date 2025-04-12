@@ -5,10 +5,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Button, Label, TextInput, Select } from "flowbite-react";
+import { Button, Label, TextInput, Select, Spinner } from "flowbite-react";
 import { RootState } from "@/store";
-import { updateContactInfo} from "@/store/slices/formSlice";
+import { updateContactInfo } from "@/store/slices/formSlice";
 import ProgressBar from "@/components/ProgressBar";
+import { useState } from "react";
 
 const schema = yup.object().shape({
   phoneNumber: yup.string().required("Phone Number is required"),
@@ -27,6 +28,7 @@ export default function Step2() {
   const dispatch = useDispatch();
   const router = useRouter();
   const formData = useSelector((state: RootState) => state.form);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -38,6 +40,7 @@ export default function Step2() {
   });
 
   const onSubmit = (data: any) => {
+    setLoading(true);
     dispatch(updateContactInfo(data));
     router.push("/form/step-3");
   };
@@ -53,7 +56,7 @@ export default function Step2() {
           <p className="text-red-500 text-sm">{errors.phoneNumber?.message}</p>
         </div>
         <div>
-          <Label>Alternate Phone Number</Label>
+          <Label>Alternate Phone Number (optional)</Label>
           <TextInput {...register("alternatePhoneNumber")} />
         </div>
         <div>
@@ -62,7 +65,7 @@ export default function Step2() {
           <p className="text-red-500 text-sm">{errors.addressLine1?.message}</p>
         </div>
         <div>
-          <Label>Address Line 2</Label>
+          <Label>Address Line 2 (optional)</Label>
           <TextInput {...register("addressLine2")} />
         </div>
         <div>
@@ -98,7 +101,13 @@ export default function Step2() {
           <Button onClick={() => router.back()} color="gray">
             Back
           </Button>
-          <Button type="submit">Next</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <Spinner aria-label="Loading..." size="sm" light={true} />
+            ) : (
+              "Next"
+            )}
+          </Button>
         </div>
       </form>
     </div>

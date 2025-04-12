@@ -5,11 +5,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Button, Label, TextInput, Select, FileInput } from "flowbite-react";
+import { Button, Label, TextInput, Select, FileInput, Spinner } from "flowbite-react";
 import { RootState } from "@/store";
 import { updateEmploymentInfo } from "@/store/slices/formSlice";
 import ProgressBar from "@/components/ProgressBar";
 import { EmploymentInfo } from "@/types/formTypes";
+import { useState } from "react";
 
 const schema = yup.object().shape({
   currentJobTitle: yup.string().required("Job title is required"),
@@ -39,6 +40,7 @@ export default function Step3() {
   const dispatch = useDispatch();
   const router = useRouter();
   const formData = useSelector((state: RootState) => state.form);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -51,6 +53,7 @@ export default function Step3() {
   });
 
   const onSubmit = (data: any) => {
+    setLoading(true);
     dispatch(updateEmploymentInfo(data));
     router.push("/form/step-4");
   };
@@ -108,7 +111,13 @@ export default function Step3() {
           <Button onClick={() => router.back()} color="gray" type="button">
             Back
           </Button>
-          <Button type="submit">Next</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <Spinner aria-label="Loading..." size="sm" light={true} />
+            ) : (
+              "Next"
+            )}
+          </Button>
         </div>
       </form>
     </div>

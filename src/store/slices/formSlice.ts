@@ -1,7 +1,7 @@
 import { FormState } from "@/types/formTypes";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState : FormState = {
+const initialState: FormState = {
   userProfile: {
     fullName: "",
     email: "",
@@ -34,8 +34,8 @@ const initialState : FormState = {
   },
   preferences: {
     preferredContactMode: "",
-    hobbies: [],
-    newsletter: false,
+    hobbiesAndInterests: [],
+    newsletterSubscription: false,
   },
 };
 
@@ -59,6 +59,9 @@ const formSlice = createSlice({
       state.preferences = action.payload;
     },
     resetForm: () => initialState,
+    updateFormState: (_state, action) => {
+      return action.payload;
+    },
   },
 });
 
@@ -69,5 +72,6 @@ export const {
   updateFinancialInfo,
   updatePreferences,
   resetForm,
+  updateFormState,
 } = formSlice.actions;
 export default formSlice.reducer;

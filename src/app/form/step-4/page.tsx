@@ -1,15 +1,16 @@
 "use client";
 
-import { useForm, Controller, Resolver } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Button, Label, TextInput, Radio } from "flowbite-react";
+import { Button, Label, TextInput, Radio, Spinner } from "flowbite-react";
 import { RootState } from "@/store";
 import { updateFinancialInfo } from "@/store/slices/formSlice";
 import ProgressBar from "@/components/ProgressBar";
 import { FinancialInfo } from "@/types/formTypes";
+import { useState } from "react";
 
 const schema = yup.object().shape({
   monthlyIncome: yup
@@ -23,10 +24,14 @@ const schema = yup.object().shape({
     .required("Loan status is required"),
 
   loanAmount: yup.number().when("loanStatus", {
-      is: (val: string) => val === "Yes",
-      then: (schema) => schema.required("Loan amount is required").min(1, "Loan amount must be greater than 0").typeError("Loan amount must be a number"),
-      otherwise: (schema) => schema.notRequired(),
-    }),
+    is: (val: string) => val === "Yes",
+    then: (schema) =>
+      schema
+        .required("Loan amount is required")
+        .min(1, "Loan amount must be greater than 0")
+        .typeError("Loan amount must be a number"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 
   creditScore: yup
     .number()
@@ -38,6 +43,7 @@ export default function Step4() {
   const dispatch = useDispatch();
   const router = useRouter();
   const formData = useSelector((state: RootState) => state.form);
+  const [loading, setLoading] = useState(false);  
 
   const {
     register,
@@ -50,11 +56,12 @@ export default function Step4() {
     defaultValues: formData.financialInfo || {},
   });
 
-  console.log(errors,"Errors");
+  console.log(errors, "Errors");
 
   const watchLoanStatus = watch("loanStatus");
 
   const onSubmit = (data: any) => {
+    setLoading(true);
     dispatch(updateFinancialInfo(data));
     router.push("/form/step-5");
   };
@@ -105,7 +112,13 @@ export default function Step4() {
           <Button onClick={() => router.back()} color="gray" type="button">
             Back
           </Button>
-          <Button type="submit">Next</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <Spinner aria-label="Loading..." size="sm" light={true} />
+            ) : (
+              "Next"
+            )}
+          </Button>
         </div>
       </form>
     </div>

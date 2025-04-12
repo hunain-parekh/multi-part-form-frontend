@@ -39,12 +39,13 @@ export interface UserProfile {
   // Preferences Section
   export interface Preferences {
     preferredContactMode: string;
-    hobbies: string[];
-    newsletter: boolean;
+    hobbiesAndInterests: string[];
+    newsletterSubscription: boolean;
   }
   
   // Main State Interface
   export interface FormState {
+    _id?: string;
     userProfile: UserProfile;
     contactInfo: ContactInfo;
     employmentInfo: EmploymentInfo;

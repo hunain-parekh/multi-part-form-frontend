@@ -5,11 +5,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Button, Checkbox, Label, Radio } from "flowbite-react";
+import { Button, Checkbox, Label, Radio, Spinner } from "flowbite-react";
 import { RootState } from "@/store";
 import { updatePreferences } from "@/store/slices/formSlice";
 import ProgressBar from "@/components/ProgressBar";
 import { Preferences } from "@/types/formTypes";
+import { useState } from "react";
 
 const schema = yup.object().shape({
   preferredContactMode: yup
@@ -17,18 +18,19 @@ const schema = yup.object().shape({
     .oneOf(["Email", "Phone", "SMS"])
     .required("Preferred contact mode is required"),
 
-  hobbies: yup
+  hobbiesAndInterests: yup
     .array()
     .of(yup.string())
     .min(1, "Please select at least one hobby"),
 
-  newsletter: yup.boolean(),
+  newsletterSubscription: yup.boolean(),
 });
 
 export default function Step5() {
   const dispatch = useDispatch();
   const router = useRouter();
   const formData = useSelector((state: RootState) => state.form);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -41,6 +43,7 @@ export default function Step5() {
   });
 
   const onSubmit = (data: any) => {
+    setLoading(true);
     dispatch(updatePreferences(data));
     router.push("/form/step-6"); // Change to next step
   };
@@ -52,7 +55,6 @@ export default function Step5() {
       <ProgressBar />
       <h2 className="text-2xl font-bold mb-6">Step 5: Preferences</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-
         {/* Preferred Contact Mode */}
         <div>
           <Label className="mb-1">Preferred Mode of Contact</Label>
@@ -75,21 +77,20 @@ export default function Step5() {
           <div className="flex flex-col gap-2">
             {hobbiesOptions.map((hobby) => (
               <Label key={hobby} className="flex items-center gap-2">
-                <Checkbox
-                  value={hobby}
-                  {...register("hobbies")}
-                />
+                <Checkbox value={hobby} {...register("hobbiesAndInterests")} />
                 {hobby}
               </Label>
             ))}
           </div>
-          <p className="text-red-500 text-sm">{errors.hobbies?.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.hobbiesAndInterests?.message}
+          </p>
         </div>
 
         {/* Newsletter */}
         <div>
           <Label className="flex items-center gap-2">
-            <Checkbox {...register("newsletter")} />
+            <Checkbox {...register("newsletterSubscription")} />
             Subscribe to our newsletter
           </Label>
         </div>
@@ -98,7 +99,13 @@ export default function Step5() {
           <Button type="button" color="gray" onClick={() => router.back()}>
             Back
           </Button>
-          <Button type="submit">Next</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <Spinner aria-label="Loading..." size="sm" light={true} />
+            ) : (
+              "Next"
+            )}
+          </Button>
         </div>
       </form>
     </div>

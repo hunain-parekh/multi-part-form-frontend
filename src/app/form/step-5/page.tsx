@@ -12,6 +12,7 @@ import ProgressBar from "@/components/ProgressBar";
 import { Preferences } from "@/types/formTypes";
 import { useState } from "react";
 
+
 const schema = yup.object().shape({
   preferredContactMode: yup
     .string()

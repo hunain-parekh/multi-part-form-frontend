@@ -5,11 +5,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Button, Label, TextInput, Select, Spinner } from "flowbite-react";
+import { Button, Label, Select, Spinner } from "flowbite-react";
 import { RootState } from "@/store";
 import { updateContactInfo } from "@/store/slices/formSlice";
 import ProgressBar from "@/components/ProgressBar";
 import { useState } from "react";
+import FormInput from "@/components/generic/FormInput";
 
 const schema = yup.object().shape({
   phoneNumber: yup.string().required("Phone Number is required"),
@@ -50,24 +51,30 @@ export default function Step2() {
       <ProgressBar />
       <h2 className="text-2xl font-bold mb-6">Step 2: Contact Information</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <Label>Phone Number</Label>
-          <TextInput {...register("phoneNumber")} />
-          <p className="text-red-500 text-sm">{errors.phoneNumber?.message}</p>
-        </div>
-        <div>
-          <Label>Alternate Phone Number (optional)</Label>
-          <TextInput {...register("alternatePhoneNumber")} />
-        </div>
-        <div>
-          <Label>Address Line 1</Label>
-          <TextInput {...register("addressLine1")} />
-          <p className="text-red-500 text-sm">{errors.addressLine1?.message}</p>
-        </div>
-        <div>
-          <Label>Address Line 2 (optional)</Label>
-          <TextInput {...register("addressLine2")} />
-        </div>
+        <FormInput
+          label="Phone Number"
+          name="phoneNumber"
+          register={register}
+          errors={errors}
+        />
+        <FormInput
+          label="Alternate Phone Number (optional)"
+          name="alternatePhoneNumber"
+          register={register}
+          errors={errors}
+        />
+        <FormInput
+          label="Address Line 1"
+          name="addressLine1"
+          register={register}
+          errors={errors}
+        />
+        <FormInput
+          label="Address Line 2 (optional)"
+          name="addressLine2"
+          register={register}
+          errors={errors}
+        />
         <div>
           <Label>City</Label>
           <Select {...register("city")}>
@@ -80,11 +87,12 @@ export default function Step2() {
           </Select>
           <p className="text-red-500 text-sm">{errors.city?.message}</p>
         </div>
-        <div>
-          <Label>Postal Code</Label>
-          <TextInput {...register("postalCode")} />
-          <p className="text-red-500 text-sm">{errors.postalCode?.message}</p>
-        </div>
+        <FormInput
+          label="Postal Code"
+          name="postalCode"
+          register={register}
+          errors={errors}
+        />
         <div>
           <Label>Country</Label>
           <Select {...register("country")}>

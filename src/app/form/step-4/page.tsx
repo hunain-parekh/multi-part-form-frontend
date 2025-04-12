@@ -5,12 +5,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Button, Label, TextInput, Radio, Spinner } from "flowbite-react";
+import { Button, Label, Radio, Spinner } from "flowbite-react";
 import { RootState } from "@/store";
 import { updateFinancialInfo } from "@/store/slices/formSlice";
 import ProgressBar from "@/components/ProgressBar";
 import { FinancialInfo } from "@/types/formTypes";
 import { useState } from "react";
+import FormInput from "@/components/generic/FormInput";
 
 const schema = yup.object().shape({
   monthlyIncome: yup
@@ -43,7 +44,7 @@ export default function Step4() {
   const dispatch = useDispatch();
   const router = useRouter();
   const formData = useSelector((state: RootState) => state.form);
-  const [loading, setLoading] = useState(false);  
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -71,13 +72,13 @@ export default function Step4() {
       <ProgressBar />
       <h2 className="text-2xl font-bold mb-6">Step 4: Financial Information</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <Label>Monthly Income (PKR)</Label>
-          <TextInput type="number" {...register("monthlyIncome")} />
-          <p className="text-red-500 text-sm">
-            {errors.monthlyIncome?.message}
-          </p>
-        </div>
+        <FormInput
+          label="Monthly Income (PKR)"
+          name="monthlyIncome"
+          type="number"
+          register={register}
+          errors={errors}
+        />
 
         <div>
           <Label>Do you have any loans?</Label>
@@ -95,18 +96,22 @@ export default function Step4() {
         </div>
 
         {watchLoanStatus === "Yes" && (
-          <div>
-            <Label>Loan Amount (PKR)</Label>
-            <TextInput type="number" {...register("loanAmount")} />
-            <p className="text-red-500 text-sm">{errors.loanAmount?.message}</p>
-          </div>
+          <FormInput
+            label="Loan Amount (PKR)"
+            name="loanAmount"
+            type="number"
+            register={register}
+            errors={errors}
+          />
         )}
 
-        <div>
-          <Label>Credit Score</Label>
-          <TextInput type="number" {...register("creditScore")} />
-          <p className="text-red-500 text-sm">{errors.creditScore?.message}</p>
-        </div>
+        <FormInput
+          label="Credit Score"
+          name="creditScore"
+          type="number"
+          register={register}
+          errors={errors}
+        />
 
         <div className="flex justify-between">
           <Button onClick={() => router.back()} color="gray" type="button">

@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import {
   Button,
   Label,
-  TextInput,
   Select,
   FileInput,
   Spinner,
@@ -18,6 +17,7 @@ import { updateEmploymentInfo } from "@/store/slices/formSlice";
 import ProgressBar from "@/components/ProgressBar";
 import { EmploymentInfo } from "@/types/formTypes";
 import { useEffect, useState } from "react";
+import FormInput from "@/components/generic/FormInput";
 
 const schema = yup.object().shape({
   currentJobTitle: yup.string().required("Job title is required"),
@@ -91,8 +91,6 @@ export default function Step3() {
   };
 
   const watchEmploymentStatus = watch("employmentStatus");
-  const uploadedResume =
-    formData.employmentInfo.resume?.[0] || watch("resume")?.[0];
   const resumePath = formData.employmentInfo.resumePath;
 
   return (
@@ -102,13 +100,12 @@ export default function Step3() {
         Step 3: Employment Information
       </h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <Label>Current Job Title</Label>
-          <TextInput {...register("currentJobTitle")} />
-          <p className="text-red-500 text-sm">
-            {errors.currentJobTitle?.message}
-          </p>
-        </div>
+        <FormInput
+          label="Current Job Title"
+          name="currentJobTitle"
+          register={register}
+          errors={errors}
+        />
         <div>
           <Label>Employment Status</Label>
           <Select {...register("employmentStatus")}>
@@ -122,21 +119,20 @@ export default function Step3() {
           </p>
         </div>
         {watchEmploymentStatus === "Employed" && (
-          <div>
-            <Label>Company Name</Label>
-            <TextInput {...register("companyName")} />
-            <p className="text-red-500 text-sm">
-              {errors.companyName?.message}
-            </p>
-          </div>
+          <FormInput
+            label="Company Name"
+            name="companyName"
+            register={register}
+            errors={errors}
+          />
         )}
-        <div>
-          <Label>Years of Experience</Label>
-          <TextInput type="number" {...register("yearsOfExperience")} />
-          <p className="text-red-500 text-sm">
-            {errors.yearsOfExperience?.message}
-          </p>
-        </div>
+        <FormInput
+          label="Years of Experience"
+          type="number"
+          name="yearsOfExperience"
+          register={register}
+          errors={errors}
+        />
         <div>
           <Label>Resume Upload</Label>
           <FileInput {...register("resume")} />

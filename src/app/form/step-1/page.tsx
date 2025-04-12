@@ -10,13 +10,13 @@ import {
   Button,
   Label,
   Radio,
-  TextInput,
   Datepicker,
   Spinner,
 } from "flowbite-react";
 import { RootState } from "@/store";
 import ProgressBar from "@/components/ProgressBar";
 import { useState } from "react";
+import FormInput from "@/components/generic/FormInput";
 
 const schema = yup.object().shape({
   fullName: yup.string().required("Full name is required"),
@@ -44,7 +44,10 @@ export default function Step1() {
     watch,
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: formData.userProfile || {},
+    defaultValues: {
+      ...formData.userProfile,
+      confirmPassword: formData?.userProfile?.password || "",
+    },
   });
 
   const onSubmit = (data: any) => {
@@ -58,28 +61,35 @@ export default function Step1() {
       <ProgressBar />
       <h2 className="text-2xl font-bold mb-6">Step 1: User Profile</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <Label>Full Name</Label>
-          <TextInput {...register("fullName")} />
-          <p className="text-red-500 text-sm">{errors.fullName?.message}</p>
-        </div>
-        <div>
-          <Label>Email</Label>
-          <TextInput type="email" {...register("email")} />
-          <p className="text-red-500 text-sm">{errors.email?.message}</p>
-        </div>
-        <div>
-          <Label>Password</Label>
-          <TextInput type="password" {...register("password")} />
-          <p className="text-red-500 text-sm">{errors.password?.message}</p>
-        </div>
-        <div>
-          <Label>Confirm Password</Label>
-          <TextInput type="password" defaultValue={formData?.userProfile?.password} {...register("confirmPassword")} />
-          <p className="text-red-500 text-sm">
-            {errors.confirmPassword?.message}
-          </p>
-        </div>
+        <FormInput
+          label="Full Name"
+          name="fullName"
+          register={register}
+          errors={errors}
+        />
+
+        <FormInput
+          label="Email"
+          name="email"
+          type="email"
+          register={register}
+          errors={errors}
+        />
+        <FormInput
+          label="Password"
+          name="password"
+          type="password"
+          register={register}
+          errors={errors}
+        />
+        <FormInput
+          label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          register={register}
+          errors={errors}
+          defaultValue={formData?.userProfile?.password}
+        />
         <div>
           <Label>Gender</Label>
           <div className="flex gap-4">

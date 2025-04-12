@@ -14,17 +14,15 @@ import {
 export default function Step6() {
   const router = useRouter();
   const form = useSelector((state: RootState) => state.form);
-  const [loading, setLoading] = useState(false);
 
-  const [addUser] = useAddUserMutation();
-  const [updateUser] = useUpdateUserMutation();
+  const [addUser, { isLoading: isAdding }] = useAddUserMutation();
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
   const handleEdit = (step: number) => {
     router.push(`/form/step-${step}`);
   };
 
   const handleFinalSubmit = async () => {
-    setLoading(true);
     try {
       if (form._id) {
         await updateUser(form);
@@ -35,7 +33,6 @@ export default function Step6() {
     } catch (error) {
       console.error("Error during final submission: ", error);
     }
-    setLoading(false);
   };
 
   return (
@@ -196,8 +193,8 @@ export default function Step6() {
           <Button color="gray" onClick={() => handleEdit(5)}>
             Back
           </Button>
-          <Button onClick={handleFinalSubmit}>
-            {loading ? (
+          <Button onClick={handleFinalSubmit} disabled={isAdding || isUpdating}>
+            {isAdding || isUpdating ? (
               <>
                 <Spinner
                   aria-label="Loading..."

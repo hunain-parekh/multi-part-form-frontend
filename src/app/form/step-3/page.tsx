@@ -5,12 +5,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Button, Label, TextInput, Select, FileInput, Spinner } from "flowbite-react";
+import {
+  Button,
+  Label,
+  TextInput,
+  Select,
+  FileInput,
+  Spinner,
+} from "flowbite-react";
 import { RootState } from "@/store";
 import { updateEmploymentInfo } from "@/store/slices/formSlice";
 import ProgressBar from "@/components/ProgressBar";
 import { EmploymentInfo } from "@/types/formTypes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const schema = yup.object().shape({
   currentJobTitle: yup.string().required("Job title is required"),
@@ -26,14 +33,25 @@ const schema = yup.object().shape({
     .required("Years of experience is required"),
   resume: yup
     .mixed<FileList>()
-    .test("required", "Resume is required", (value) => {
-      return value && value.length > 0;
+    .test({
+      name: "resume-check",
+      message: "Resume is required",
+      test: function (value) {
+        const formData = this.options.context?.formData;
+        if (formData?._id) {
+          return true; // not required if _id exists
+        }
+        return value && value.length > 0;
+      },
     })
-    .test("fileSize", "File is too large (max 5MB)", (value) => {
-      if (!value || value.length === 0) return true; // skip if empty, let "required" test handle
-      return value[0].size <= 5 * 1024 * 1024;
-    })
-    .nullable(),
+    .test({
+      name: "fileSize",
+      message: "File is too large (max 5MB)",
+      test: function (value) {
+        if (!value || value.length === 0) return true;
+        return value[0].size <= 5 * 1024 * 1024;
+      },
+    }),
 });
 
 export default function Step3() {
@@ -41,6 +59,7 @@ export default function Step3() {
   const router = useRouter();
   const formData = useSelector((state: RootState) => state.form);
   const [loading, setLoading] = useState(false);
+  const [resumePreviewUrl, setResumePreviewUrl] = useState<string | null>(null);
 
   const {
     register,
@@ -50,7 +69,20 @@ export default function Step3() {
   } = useForm({
     resolver: yupResolver(schema) as Resolver<EmploymentInfo>,
     defaultValues: formData.employmentInfo || {},
+    context: { formData },
   });
+
+  const resumeFile = watch("resume")?.[0];
+
+  useEffect(() => {
+    if (resumeFile) {
+      const blobUrl = URL.createObjectURL(resumeFile);
+      setResumePreviewUrl(blobUrl);
+
+      // Clean up old blob to avoid memory leaks
+      return () => URL.revokeObjectURL(blobUrl);
+    }
+  }, [resumeFile]);
 
   const onSubmit = (data: any) => {
     setLoading(true);
@@ -59,6 +91,9 @@ export default function Step3() {
   };
 
   const watchEmploymentStatus = watch("employmentStatus");
+  const uploadedResume =
+    formData.employmentInfo.resume?.[0] || watch("resume")?.[0];
+  const resumePath = formData.employmentInfo.resumePath;
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -107,6 +142,24 @@ export default function Step3() {
           <FileInput {...register("resume")} />
           <p className="text-red-500 text-sm">{errors.resume?.message}</p>
         </div>
+
+        {resumePreviewUrl ? (
+          <div>
+            <Label className="mt-[20px]">Resume Preview</Label>
+            <iframe className="w-full h-[500px]" src={resumePreviewUrl} />
+          </div>
+        ) : (
+          resumePath && (
+            <div>
+              <Label className="mt-[20px]">Resume Preview</Label>
+              <iframe
+                className="w-full h-[500px]"
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${resumePath}`}
+              />
+            </div>
+          )
+        )}
+
         <div className="flex justify-between">
           <Button onClick={() => router.back()} color="gray" type="button">
             Back

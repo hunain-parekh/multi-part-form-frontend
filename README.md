@@ -12,7 +12,7 @@ This frontend is built using:
 - 🔁 **Redux Toolkit + RTK Query** – Global state & API slice  
 - 🧠 **React Hook Form** – Lightweight form validation  
 - 🎨 **Tailwind CSS** – Modern utility-first styling  
-- 📄 **Axios** – For sending multipart form data  
+- 📄 **RTK Quries** – For sending multipart form data  
 
 ---
 
@@ -62,7 +62,7 @@ npm install
 Create a `.env.local` file in the root and add your backend API base URL:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
 ```
 
 ### 4. Run the Dev Server
@@ -86,7 +86,7 @@ Visit [http://localhost:3000](http://localhost:3000)
 ### 🧠 State Management
 
 - All form data is managed globally via `formSlice`  
-- RTK Query (`formApi`) handles communication with backend
+- RTK Query (`userApi`) handles communication with backend
 
 ---
 
